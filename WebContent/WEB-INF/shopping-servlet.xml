@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:p="http://www.springframework.org/schema/p"
+xsi:schemaLocation="http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- Dispatcher 서블릿클래스가 클라이언트의 요청을 미리 받고...
+	       아래의 컨트롤러 클래스들 중...하나가 자동으로 맵핑되어 아래 컨트롤러 클래스가 실행되게 선언함 -->
+	
+	<!-- 요청정보를 전달받아.. 응답결과를 생성하는 Controller클래스선언 -->
+	<!-- 인터넷주소창에 hello.do라는 요청이 들어오면...HelloController클래스를 실행되게 선언-->
+	<bean id="hello" name="/hello.do" class="controller.HelloController"></bean>
+	
+	<!--  index.do라는 요청이 들어오면...ShoppingController클래스를 실행되게 선언 -->
+	<bean id="index" name="/index.do" class="controller.ShoppingController"></bean>
+	
+	<!--  Top.jsp에서 수작업 공구 메뉴를 클릭하여 sujak.do 라는 요청이 들어오면...ShoppingController클래스를 실행되게 선언 -->
+	<bean id="sujak" name="/sujak.do"  class="controller.ShoppingController"
+		  p:shoppingDao-ref="shoppingDao"></bean>
+	<!-- 
+	   바로위코드 설명
+		p:shoppingDao-ref="shoppingDao" 의 뜻!
+		아래소스중 ?
+		id="shoppingDao"인 <bean>객체에 있는 model.ShoppingDAO클래스를 참조(의존하여)하여 사용 하겠다는 뜻.
+	-->
+
+ 	
+ 	
+	
+	<!--Controller로부터 응답결과를 보여줄  jsp호출하는 방법에 대한 객체 생성 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">	 
+		
+		<!--jsp에서 jstl을 사용하기 위해 설정 -->
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+	
+		<!-- .jsp페이지로 가기전에 한글처리 -->
+		<property name="contentType" value="text/html; charset=euc-kr"></property>
+	
+		<!-- jsp파일을 호출할때..확장자명 .jsp를 붙여서 호출 하겠다 는 뜻 -->
+		<property name="suffix" value=".jsp"/>
+		
+	
+	</bean>
+	
+	
+	
+	
+	 <!-- 오라클 데이터 베이스 사용(연결)하는 클래스 등록 -->
+	 <bean id="shoppingDao" class="model.ShoppingDAO"  p:dataSource-ref="dataSource"  /> 
+	
+	 <!--p:dataSource-ref="dataSource" 뜻 :  아래의 id="dateSource"인 <bean>객체를 참조(의존하여)하여 쓰겠다는 뜻  -->
+	 <!--
+	 전체 설명 : 
+	 오라클 데이터 베이스 연결정보가 저장되어 있는 아래의 <bean id="dataSource"> 객체의  DriverManagerDataSource클래스를...
+	 누가? model.ShoppingDAO클래스가~~  new ShoppingDAO() 로 객체를 생성해서 가져다가 사용하지 않고 바로 가져다 사용하기위해..
+	 아래의 id="dateSource"인 <bean>객체를 참조(의존하여)하여 쓰겠다라고 등록 한 것이다.
+	  -->	
+
+	 <!-- 데이터 베이스 설정 하기(오라클용 데이터 베이스)  시작-->
+	 <bean id="dataSource" 
+	 	   class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		 
+		 <!-- DriverManagerDataSource(커넥션풀)클래스에  xml형태로 멤버변수들에 각각 DB연결정보를 저장 -->
+		 <property name="driverClassName">
+		 	<value>oracle.jdbc.driver.OracleDriver</value>
+		 </property>
+		 <property name="url">
+		 	<value>jdbc:oracle:thin:@localhost:1521:XE</value>
+		 </property>
+		 <property name="username">
+		 	<value>hr</value>
+		 </property>
+		 <property name="password">
+		 	<value>hr</value>
+		 </property>
+	 </bean> 
+	 <!-- 데이터 베이스 설정(오라클용 데이터 베이스)  끝-->
+	
+</beans>
